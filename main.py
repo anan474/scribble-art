@@ -18,6 +18,14 @@ def delete_and_create_output_folder():
         subprocess.call(["rm", "-r", "output"])
         subprocess.call(["mkdir", "-p", "output"])
 
+
+def get_config(filename):
+    config = configparser.ConfigParser()
+    config.read(filename)
+    return config
+
+
+
 def main():
     delete_and_create_output_folder()
     parser = argparse.ArgumentParser()
@@ -29,7 +37,7 @@ def main():
         help="path to program options file")
     arguments = vars(parser.parse_args())
     filename = arguments["config"]
-    config = configparser.ConfigParser().read(filename)
+    config = get_config(filename)
     create_scribble_art(config)
 
 
