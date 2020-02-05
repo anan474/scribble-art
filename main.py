@@ -1,15 +1,18 @@
 import configparser
 import argparse
 import subprocess
+import os
 
 
 
 
-
+def delete_and_create_output_folder():
+    with open(os.devnull, 'wb') as quiet_output:
+        subprocess.call(["rm", "-r", "output"])
+        subprocess.call(["mkdir", "-p", "output"])
 
 def main():
-    subprocess.call(["rm", "-r", "output"])
-    subprocess.call(["mkdir", "-p", "output"])
+    delete_and_create_output_folder()
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-c",
@@ -19,7 +22,7 @@ def main():
         help="path to program options file")
     arguments = vars(parser.parse_args())
     filename = arguments["config"]
-    config = get_config(filename)
+    config = configparser.ConfigParser().read(filename)
 
 
 
