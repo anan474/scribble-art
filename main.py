@@ -9,6 +9,10 @@ import math
 
 
 
+def create_scribble_art(config):
+    source_image = cv2.imread(config["INPUT_OUTPUT"]["input_image"])
+
+
 def delete_and_create_output_folder():
     with open(os.devnull, 'wb') as quiet_output:
         subprocess.call(["rm", "-r", "output"])
@@ -26,7 +30,7 @@ def main():
     arguments = vars(parser.parse_args())
     filename = arguments["config"]
     config = configparser.ConfigParser().read(filename)
-
+    create_scribble_art(config)
 
 
 if __name__ == '__main__':
