@@ -13,20 +13,30 @@ def create_scribble_art(config):
     source_image = cv2.imread(config["INPUT_OUTPUT"]["input_image"])
 
 
+
 def delete_and_create_output_folder():
+    """
+    Each time the program is run, the previous output
+    folder shall be deleted.
+    """
     with open(os.devnull, 'wb') as quiet_output:
         subprocess.call(["rm", "-r", "output"])
         subprocess.call(["mkdir", "-p", "output"])
 
 
 def get_config(filename):
+    """
+    All settings are stored in an external text file.
+    """
     config = configparser.ConfigParser()
     config.read(filename)
     return config
 
 
-
 def main():
+    """
+    The program start and ends here.
+    """
     delete_and_create_output_folder()
     parser = argparse.ArgumentParser()
     parser.add_argument(
