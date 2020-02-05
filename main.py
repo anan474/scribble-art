@@ -8,11 +8,23 @@ import random
 import math
 
 
+def get_prepared_image(source_image, scale_factor):
+    """
+    The original image must be resized and turned into a
+    grayscale image.
+    """
+    gray_image = cv2.cvtColor(source_image, cv2.COLOR_BGR2GRAY)
+    resized_image = cv2.resize(gray_image, dsize=(0,0), fx=scale_factor, fy=scale_factor)
+    return resized_image
+
+
 
 def create_scribble_art(config):
     source_image = cv2.imread(config["INPUT_OUTPUT"]["input_image"])
-
-
+    scale_factor = float(config["DRAWING"]["image_scale_factor"])
+    prepared_image = get_prepared_image(source_image, scale_factor)
+    cv2.imshow("test", prepared_image)
+    cv2.waitKey(0)
 
 def delete_and_create_output_folder():
     """
