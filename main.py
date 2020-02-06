@@ -146,7 +146,7 @@ def create_video(lines, video_parameters, shape):
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
     fourcc = 0x00000021
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter('project.avi', fourcc, fps, size)
+    out = cv2.VideoWriter('./output/final.avi', fourcc, fps, size)
 
     for f in frames:
         out.write(f)
