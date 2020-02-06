@@ -74,8 +74,8 @@ def get_neighboring_points(points, cell_width, xmax, ymax):
         current_best_point_index = None
         current_best_distance = None
 
-        cell_distance = 1
-        neighbor_cell_indices = [(current_i, current_k)] + get_neighbor_cell_indices(current_i, current_k, cell_distance, nx, ny)
+        search_distance = 1
+        neighbor_cell_indices = [(current_i, current_k)] + get_neighbor_cell_indices(current_i, current_k, search_distance, nx, ny)
         for cell_i, cell_k in neighbor_cell_indices:
             for point_index, point in enumerate(grid[cell_i][cell_k]):
                 distance = calc_distance(current_point, point)
@@ -96,11 +96,11 @@ def get_neighboring_points(points, cell_width, xmax, ymax):
             # delete the found point
             del grid[current_i][current_k][current_point_index]
         else:
-            # get any other point
+            # get any other point in the near distance
             found_new = False
-            cell_distance = 2
+            search_distance = 2
             while not found_new:
-                neighbor_cell_indices = get_neighbor_cell_indices(current_i, current_k, cell_distance, nx, ny)
+                neighbor_cell_indices = get_neighbor_cell_indices(current_i, current_k, search_distance, nx, ny)
                 random.shuffle(neighbor_cell_indices)
                 for cell_i, cell_k in neighbor_cell_indices:
                     if grid[cell_i][cell_k] != []:
@@ -114,6 +114,6 @@ def get_neighboring_points(points, cell_width, xmax, ymax):
                         del grid[current_i][current_k][current_point_index]
                         break
 
-                cell_distance += 1
+                search_distance += 1
 
     return connected
