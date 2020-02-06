@@ -94,21 +94,18 @@ def load_from_file(config):
 
 
 def create_scribble_art(config):
-    source_image = cv2.imread(config["INPUT_OUTPUT"]["input_image"])
-    scale_factor = float(config["DRAWING"]["image_scale_factor"])
+    infile_path, scale_factor, no_of_layers, exponent, prefactor, max_line_length_factor = load_from_file(config)
+    source_image = cv2.imread(infile_path)
     prepared_image = get_prepared_image(source_image, scale_factor)
+
     xmax = prepared_image.shape[1]
     ymax = prepared_image.shape[0]
 
-    no_of_layers = int(config["DRAWING"]["no_of_layers"])
-    exponent = float(config["DRAWING"]["point_thresholds_exponent"])
-    prefactor = float(config["DRAWING"]["point_thresholds_prefactor"])
     point_thresholds = get_point_thresholds(no_of_layers, exponent, prefactor)
     gray_value_step = 255.0 / len(point_thresholds)
 
-    max_line_length_factor = float(config["DRAWING"]["max_line_length_factor"])
     max_distance = max_line_length_factor * \
-        min(prepared_image.shape[1], prepared_image.shape[0])
+        min(xmax, ymax)
 
     lines = []
     for layer_index in range(no_of_layers):
