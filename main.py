@@ -130,6 +130,7 @@ def get_line_segments_from_points(neighboring_points, max_distance):
         start = neighboring_points[i]
         end = neighboring_points[i+1]
         if connections.calc_distance(start,end) < max_distance:
+        if connections.calc_distance(start,end) < threshold:
             lines.append((start,end))
     return lines
 
