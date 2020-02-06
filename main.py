@@ -127,7 +127,6 @@ def create_video(lines, video_parameters, shape):
                 stroke_scale = 1
                 color = [0,0,0]
             cv2.line(canvas, start, end, color, thickness=stroke_scale, lineType=8, shift=0)
-            #cv2.imwrite("./output/frames/frame_{:07d}.png".format(i), canvas)
         frames.append(canvas)
     print("")
 
