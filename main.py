@@ -72,9 +72,7 @@ def create_scribble_art(config):
 
     lines = []
     for layer_index in range(no_of_layers):
-        text = "\rCreate layer {:4d} / {:d}".format(layer_index, no_of_layers-1)
-        sys.stdout.write(text)
-        sys.stdout.flush()
+        print_progress("Create layers", layer_index, no_of_layers-1)
         current_max = 255.0 - (layer_index + 1.0) * gray_value_step
         points = get_layer_points(current_max, point_thresholds[layer_index], prepared_image)
 
@@ -109,10 +107,15 @@ def create_final_canvas(lines, shape):
         cv2.line(canvas, start, end, color, thickness=stroke_scale, lineType=8, shift=0)
     return canvas
 
-def create_video(lines, video_parameters, shape):
-    with open(os.devnull, 'wb') as quiet_output:
-        subprocess.call(["mkdir", "output/frames"])
+def print_progress(msg, index, total):
+    """
+    This keeps the output on the same line.
+    """
+    text = "\r" + msg + " {:7d}/{:d}".format(index, total)
+    sys.stdout.write(text)
+    sys.stdout.flush()
 
+def create_video(lines, video_parameters, shape):
     drawing_duration = float(video_parameters["drawing_duration"])
     fps = float(video_parameters["fps"])
     no_of_frames = int(drawing_duration * fps)
@@ -120,10 +123,8 @@ def create_video(lines, video_parameters, shape):
     no_of_lines_per_second = int(len(lines) / drawing_duration)
     frames = []
     for i in range(no_of_frames):
+        print_progress("Create frames", i, no_of_frames-1)
         canvas = get_empty_white_canvas(shape[1], shape[0])
-        text = "\rCreate frame {:7d} / {:d}".format(i, no_of_frames-1)
-        sys.stdout.write(text)
-        sys.stdout.flush()
         line_index_a = i * no_of_lines_per_frame
         line_index_b = min(line_index_a + no_of_lines_per_frame, len(lines))
         for line_index, line in enumerate(lines[0:line_index_b]):
