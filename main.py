@@ -99,16 +99,21 @@ def create_scribble_art(config):
         points = get_layer_points(current_max, point_thresholds[layer_index], prepared_image)
 
         if len(points) > 1:
-            xmax = prepared_image.shape[1]
-            ymax = prepared_image.shape[0]
-            neighboring_points = connections.get_neighboring_points(points, max_distance, xmax, ymax)
-            lines += get_line_segments_from_points(neighboring_points, max_distance)
+            avg_distance = math.sqrt(float(xmax * ymax) / len(points))
+            cell_width = min(avg_distance, max_distance)
+            neighboring_points = connections.get_neighboring_points(points, cell_width, xmax, ymax)
+            lines += get_line_segments_from_points(neighboring_points, cell_width)
 
+        if bool(config["INPUT_OUTPUT"]["show_step_images"]):
+            canvas = put_lines_on_canvas(lines, prepared_image.shape)
+            new_height = int(config["INPUT_OUTPUT"]["step_image_height"])
+            cv2.imshow("Current state", resize_image_to_height(canvas, new_height))
+            cv2.waitKey(1)
 
     print("")
 
     if bool(config["INPUT_OUTPUT"]["create_png"]):
-        canvas = create_final_canvas(lines, prepared_image.shape)
+        canvas = put_lines_on_canvas(lines, prepared_image.shape)
         cv2.imwrite("./output/result.png", canvas)
     if bool(config["INPUT_OUTPUT"]["create_svg"]):
         svg_drawing = svgwrite.Drawing(filename="./output/result.svg", size=(prepared_image.shape[1], prepared_image.shape[0]), debug=True)
