@@ -88,7 +88,9 @@ def create_scribble_art(config):
     gray_value_step = 255.0 / len(point_thresholds)
 
 
-    max_distance = float(config["DRAWING"]["max_line_length_factor"]) * min(prepared_image.shape[1], prepared_image.shape[0])
+    max_line_length_factor = float(config["DRAWING"]["max_line_length_factor"])
+    max_distance = max_line_length_factor * min(prepared_image.shape[1], prepared_image.shape[0])
+
 
     lines = []
     for layer_index in range(no_of_layers):
