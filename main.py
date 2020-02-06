@@ -83,6 +83,15 @@ def resize_image_to_width(img, new_width):
     img_resized = cv2.resize(img, (new_width, int(new_height)))
     return img_resized
 
+def load_from_file(config):
+    scale_factor = float(config["DRAWING"]["image_scale_factor"])
+    no_of_layers = int(config["DRAWING"]["no_of_layers"])
+    exponent = float(config["DRAWING"]["point_thresholds_exponent"])
+    prefactor = float(config["DRAWING"]["point_thresholds_prefactor"])
+    max_line_length_factor = float(config["DRAWING"]["max_line_length_factor"])
+    infile_path = config["INPUT_OUTPUT"]["input_image"]
+    return infile_path, scale_factor, no_of_layers, exponent, prefactor, max_line_length_factor
+
 
 def create_scribble_art(config):
     source_image = cv2.imread(config["INPUT_OUTPUT"]["input_image"])
