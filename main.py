@@ -10,11 +10,13 @@ import sys
 import connections
 import svgwrite
 
+
 def get_empty_white_canvas(size_x=1920, size_y=1080):
     """
     This returns the array on which will be drawn.
     """
-    img = np.array([255], dtype=np.uint8) * np.ones((size_y,size_x,3), dtype=np.uint8)
+    img = np.array([255], dtype=np.uint8) * \
+        np.ones((size_y, size_x, 3), dtype=np.uint8)
     return img
 
 
@@ -54,7 +56,7 @@ def get_layer_points(current_max, point_threshold, prepared_image):
     random_matrix = np.random.rand(*prepared_image.shape)
     layer[random_matrix > point_threshold] = white_value
     points = np.argwhere(layer == 0)
-    points_tuples = [(p[1],p[0]) for p in points]
+    points_tuples = [(p[1], p[0]) for p in points]
     return points_tuples
 
 
@@ -66,6 +68,7 @@ def resize_image_to_height(img, new_height):
     img_resized = cv2.resize(img, (int(new_width), new_height))
     return img_resized
 
+
 def resize_image_to_width(img, new_width):
     """
     This preserves the aspect ratio.
@@ -73,6 +76,7 @@ def resize_image_to_width(img, new_width):
     new_height = round(new_width * img.shape[0] / img.shape[1])
     img_resized = cv2.resize(img, (new_width, int(new_height)))
     return img_resized
+
 
 def create_scribble_art(config):
     source_image = cv2.imread(config["INPUT_OUTPUT"]["input_image"])
@@ -87,27 +91,30 @@ def create_scribble_art(config):
     point_thresholds = get_point_thresholds(no_of_layers, exponent, prefactor)
     gray_value_step = 255.0 / len(point_thresholds)
 
-
     max_line_length_factor = float(config["DRAWING"]["max_line_length_factor"])
-    max_distance = max_line_length_factor * min(prepared_image.shape[1], prepared_image.shape[0])
-
+    max_distance = max_line_length_factor * \
+        min(prepared_image.shape[1], prepared_image.shape[0])
 
     lines = []
     for layer_index in range(no_of_layers):
         print_progress("Create layers", layer_index, no_of_layers-1)
         current_max = 255.0 - (layer_index + 1.0) * gray_value_step
-        points = get_layer_points(current_max, point_thresholds[layer_index], prepared_image)
+        points = get_layer_points(
+            current_max, point_thresholds[layer_index], prepared_image)
 
         if len(points) > 1:
             avg_distance = math.sqrt(float(xmax * ymax) / len(points))
             cell_width = min(avg_distance, max_distance)
-            neighboring_points = connections.get_neighboring_points(points, cell_width, xmax, ymax)
-            lines += get_line_segments_from_points(neighboring_points, cell_width)
+            neighboring_points = connections.get_neighboring_points(
+                points, cell_width, xmax, ymax)
+            lines += get_line_segments_from_points(
+                neighboring_points, cell_width)
 
         if bool(config["INPUT_OUTPUT"]["show_step_images"]):
             canvas = put_lines_on_canvas(lines, prepared_image.shape)
             new_height = int(config["INPUT_OUTPUT"]["step_image_height"])
-            cv2.imshow("Current state", resize_image_to_height(canvas, new_height))
+            cv2.imshow("Current state",
+                       resize_image_to_height(canvas, new_height))
             cv2.waitKey(1)
 
     print("")
@@ -116,13 +123,16 @@ def create_scribble_art(config):
         canvas = put_lines_on_canvas(lines, prepared_image.shape)
         cv2.imwrite("./output/result.png", canvas)
     if bool(config["INPUT_OUTPUT"]["create_svg"]):
-        svg_drawing = svgwrite.Drawing(filename="./output/result.svg", size=(prepared_image.shape[1], prepared_image.shape[0]), debug=True)
+        svg_drawing = svgwrite.Drawing(filename="./output/result.svg", size=(
+            prepared_image.shape[1], prepared_image.shape[0]), debug=True)
         for start, end in lines:
-            svg_drawing.add(svg_drawing.line(start, end, stroke=svgwrite.rgb(0, 0, 0, '%')))
+            svg_drawing.add(svg_drawing.line(
+                start, end, stroke=svgwrite.rgb(0, 0, 0, '%')))
         svg_drawing.save()
     if bool(config["INPUT_OUTPUT"]["create_video"]):
         video_parameters = config["VIDEO_PARAMETERS"]
         create_video(lines, video_parameters, prepared_image.shape)
+
 
 def get_line_segments_from_points(neighboring_points, threshold):
     """
@@ -133,9 +143,10 @@ def get_line_segments_from_points(neighboring_points, threshold):
     for i in range(len(neighboring_points)-1):
         start = neighboring_points[i]
         end = neighboring_points[i+1]
-        if connections.calc_distance(start,end) < threshold:
-            lines.append((start,end))
+        if connections.calc_distance(start, end) < threshold:
+            lines.append((start, end))
     return lines
+
 
 def put_lines_on_canvas(lines, shape):
     canvas = get_empty_white_canvas(shape[1], shape[0])
@@ -143,9 +154,11 @@ def put_lines_on_canvas(lines, shape):
         start = line[0]
         end = line[1]
         stroke_scale = 1
-        color = [0,0,0]
-        cv2.line(canvas, start, end, color, thickness=stroke_scale, lineType=8, shift=0)
+        color = [0, 0, 0]
+        cv2.line(canvas, start, end, color,
+                 thickness=stroke_scale, lineType=8, shift=0)
     return canvas
+
 
 def print_progress(msg, index, total):
     """
@@ -167,11 +180,13 @@ def get_resized_img_for_video(img, video_width, video_height):
         resized_width = resized_img.shape[1]
         required_border = int(round(video_width - resized_width) / 2.0)
         video_frame = get_empty_white_canvas(video_width, video_height)
-        video_frame[0:video_height,required_border:(resized_width+required_border)] = resized_img
+        video_frame[0:video_height, required_border:(
+            resized_width+required_border)] = resized_img
     else:
         resized_img = resize_image_to_width(img, video_width)
 
     return video_frame
+
 
 def create_video(lines, video_parameters, shape):
     drawing_duration = float(video_parameters["drawing_duration"])
@@ -190,27 +205,33 @@ def create_video(lines, video_parameters, shape):
         for line_index, line in enumerate(lines[0:line_index_b]):
             start = line[0]
             end = line[1]
-            seconds_lines_remain_colored = float(video_parameters["seconds_lines_remain_colored"])
+            seconds_lines_remain_colored = float(
+                video_parameters["seconds_lines_remain_colored"])
             if line_index > line_index_b - seconds_lines_remain_colored * no_of_lines_per_second:
-                color = [int(c) for c in video_parameters["active_line_color"].split(",")]
+                color = [int(c)
+                         for c in video_parameters["active_line_color"].split(",")]
                 stroke_scale = 2
             else:
                 stroke_scale = 1
-                color = [0,0,0]
-            cv2.line(canvas, start, end, color, thickness=stroke_scale, lineType=8, shift=0)
+                color = [0, 0, 0]
+            cv2.line(canvas, start, end, color,
+                     thickness=stroke_scale, lineType=8, shift=0)
 
-        resized_canvas = get_resized_img_for_video(canvas, video_width, video_height)
+        resized_canvas = get_resized_img_for_video(
+            canvas, video_width, video_height)
         frames.append(resized_canvas)
     print("")
 
     # final frame
-    duration_of_final_image = float(video_parameters["duration_of_final_image"])
+    duration_of_final_image = float(
+        video_parameters["duration_of_final_image"])
     final_canvas = put_lines_on_canvas(lines, shape)
-    resized_final_canvas = get_resized_img_for_video(final_canvas, video_width, video_height)
+    resized_final_canvas = get_resized_img_for_video(
+        final_canvas, video_width, video_height)
     for i in range(int(fps) * duration_of_final_image):
         frames.append(resized_final_canvas)
 
-    size = (video_width,video_height)
+    size = (video_width, video_height)
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
     out = cv2.VideoWriter('./output/result.avi', fourcc, fps, size)
 
@@ -237,6 +258,7 @@ def get_config(filename):
     config.read(filename)
     return config
 
+
 def set_seeds_of_rngs(seed):
     """
     You should be able to set the seeds of
@@ -245,6 +267,7 @@ def set_seeds_of_rngs(seed):
     """
     random.seed(seed)
     np.random.seed(seed)
+
 
 def main():
     """
