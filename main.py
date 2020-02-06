@@ -141,16 +141,10 @@ def create_video(lines, video_parameters, shape):
     print("")
 
     # final frame
-    canvas = get_empty_white_canvas(shape[1], shape[0])
-    for line in lines:
-        start = line[0]
-        end = line[1]
-        stroke_scale = 1
-        color = [0,0,0]
-        cv2.line(canvas, start, end, color, thickness=stroke_scale, lineType=8, shift=0)
     duration_of_final_image = float(video_parameters["duration_of_final_image"])
+    final_canvas = create_final_canvas(lines, shape)
     for i in range(int(fps) * 5):
-        frames.append(canvas)
+        frames.append(final_canvas)
 
     size = (shape[1],shape[0])
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
