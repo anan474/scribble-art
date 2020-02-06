@@ -57,10 +57,29 @@ def get_layer_points(current_max, point_threshold, prepared_image):
     points_tuples = [(p[1],p[0]) for p in points]
     return points_tuples
 
+
+def resize_image_to_height(img, new_height):
+    """
+    This preserves the aspect ratio.
+    """
+    new_width = round(new_height * img.shape[1] / img.shape[0])
+    img_resized = cv2.resize(img, (int(new_width), new_height))
+    return img_resized
+
+def resize_image_to_width(img, new_width):
+    """
+    This preserves the aspect ratio.
+    """
+    new_height = round(new_width * img.shape[0] / img.shape[1])
+    img_resized = cv2.resize(img, (new_width, int(new_height)))
+    return img_resized
+
 def create_scribble_art(config):
     source_image = cv2.imread(config["INPUT_OUTPUT"]["input_image"])
     scale_factor = float(config["DRAWING"]["image_scale_factor"])
     prepared_image = get_prepared_image(source_image, scale_factor)
+    xmax = prepared_image.shape[1]
+    ymax = prepared_image.shape[0]
 
     no_of_layers = int(config["DRAWING"]["no_of_layers"])
     exponent = float(config["DRAWING"]["point_thresholds_exponent"])
