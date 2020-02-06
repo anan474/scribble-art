@@ -94,7 +94,20 @@ def create_scribble_art(config):
     if bool(config["INPUT_OUTPUT"]["create_video"]):
         video_parameters = config["VIDEO_PARAMETERS"]
         create_video(lines, video_parameters, prepared_image.shape)
+    if bool(config["INPUT_OUTPUT"]["create_png"]):
+        canvas = create_final_canvas(lines, prepared_image.shape)
 
+
+
+def create_final_canvas(lines, shape):
+    canvas = get_empty_white_canvas(shape[1], shape[0])
+    for line in lines:
+        start = line[0]
+        end = line[1]
+        stroke_scale = 1
+        color = [0,0,0]
+        cv2.line(canvas, start, end, color, thickness=stroke_scale, lineType=8, shift=0)
+    return canvas
 
 def create_video(lines, video_parameters, shape):
     with open(os.devnull, 'wb') as quiet_output:
