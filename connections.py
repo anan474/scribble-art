@@ -36,27 +36,32 @@ def get_neighbor_cell_indices(index_a, index_b, cell_distance, index_a_max, inde
         return neighbor_cell_indices_filtered
 
 
-
-def connect_points(points, avg_distance, xmax, ymax):
-    avg_distance = math.sqrt(xmax * ymax / float(len(points)))
-
-    # grid points
-    nx = int(xmax / avg_distance) + 1
-    ny = int(ymax / avg_distance) + 1
-
+def get_grid_with_points(nx, ny, points, xmax, ymax):
     cell_width_x = xmax / float(nx)
     cell_width_y = ymax / float(ny)
-
-
     grid = [ [ [] for k in range(ny) ] for i in range(nx) ]
-
     for p in points:
         i = int(p[0] / cell_width_x)
         k = int(p[1] / cell_width_y)
         grid[i][k].append(p)
+    initial_i, initial_k = i, k
+    return grid, initial_i, initial_k
 
-    current_i = i
-    current_k = k
+def get_neighboring_points(points, max_distance, xmax, ymax):
+    """
+    Sort the points such that each point
+    is followed by its closest neighbor.
+    This is needed to know which points should be connected with
+    line segments.
+    Only if there is no neighbor within the circle with the
+    radius max_distance, any other point may follow.
+    """
+    nx = int(xmax / max_distance) + 1
+    ny = int(ymax / max_distance) + 1
+    grid, initial_i, initial_k = get_grid_with_points(nx, ny, points, xmax, ymax)
+
+    current_i = initial_i
+    current_k = initial_k
     current_point_index = 0
     current_point = grid[current_i][current_k][current_point_index]
     del grid[current_i][current_k][current_point_index]
