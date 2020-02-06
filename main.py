@@ -202,8 +202,6 @@ def get_resized_img_for_video(img, video_width, video_height):
         video_frame = get_empty_white_canvas(video_width, video_height)
         video_frame[required_border:(resized_height+required_border),
                     0:video_width] = resized_img
-
-
     return video_frame
 
 
