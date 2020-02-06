@@ -124,12 +124,15 @@ def create_scribble_art(config):
         video_parameters = config["VIDEO_PARAMETERS"]
         create_video(lines, video_parameters, prepared_image.shape)
 
-def get_line_segments_from_points(neighboring_points, max_distance):
+def get_line_segments_from_points(neighboring_points, threshold):
+    """
+    Points i and i+1 will be connected if their
+    distance is less than threshold.
+    """
     lines = []
     for i in range(len(neighboring_points)-1):
         start = neighboring_points[i]
         end = neighboring_points[i+1]
-        if connections.calc_distance(start,end) < max_distance:
         if connections.calc_distance(start,end) < threshold:
             lines.append((start,end))
     return lines
