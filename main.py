@@ -118,7 +118,8 @@ def create_video(lines, video_parameters, shape):
         for line_index, line in enumerate(lines[0:line_index_b]):
             start = line[0]
             end = line[1]
-            if line_index > line_index_b - 0.2 * no_of_lines_per_second:
+            seconds_lines_remain_colored = float(video_parameters["seconds_lines_remain_colored"])
+            if line_index > line_index_b - seconds_lines_remain_colored * no_of_lines_per_second:
                 color = [int(c) for c in video_parameters["active_line_color"].split(",")]
                 stroke_scale = 2
             else:
