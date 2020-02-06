@@ -102,14 +102,11 @@ def create_scribble_art(config):
     source_image = cv2.imread(infile_path)
     prepared_image = get_prepared_image(source_image, scale_factor)
 
-    xmax = prepared_image.shape[1]
-    ymax = prepared_image.shape[0]
+    xmax, ymax = prepared_image.shape[1], prepared_image.shape[0]
 
     point_thresholds = get_point_thresholds(no_of_layers, exponent, prefactor)
     gray_value_step = 255.0 / len(point_thresholds)
-
-    max_distance = max_line_length_factor * \
-        min(xmax, ymax)
+    max_distance = max_line_length_factor * min(xmax, ymax)
 
     lines = []
     for layer_index in range(no_of_layers):
