@@ -107,7 +107,6 @@ def create_video(lines, video_parameters, shape):
     no_of_frames = int(duration * fps)
     no_of_lines_per_frame = int(len(lines) / (duration * fps)) + 1
     no_of_lines_per_second = int(len(lines) / duration)
-    print("no_of_lines_per_frame", no_of_lines_per_frame)
     frames = []
     for i in range(no_of_frames):
         canvas = get_empty_white_canvas(shape[1], shape[0])
@@ -116,7 +115,6 @@ def create_video(lines, video_parameters, shape):
         sys.stdout.flush()
         line_index_a = i * no_of_lines_per_frame
         line_index_b = min(line_index_a + no_of_lines_per_frame, len(lines))
-        # print("lines", len(lines), line_index_b)
         for line_index, line in enumerate(lines[0:line_index_b]):
             start = line[0]
             end = line[1]
