@@ -181,7 +181,7 @@ def get_resized_img_for_video(img, video_width, video_height):
     """
     img_width = img.shape[1]
     img_height = img.shape[0]
-    if img_height > img_width:
+    if img_width / img_height <= 16.0/9.0:
         resized_img = resize_image_to_height(img, video_height)
         resized_width = resized_img.shape[1]
         required_border = int(round(video_width - resized_width) / 2.0)
