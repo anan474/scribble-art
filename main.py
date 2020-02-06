@@ -130,7 +130,7 @@ def create_scribble_art(config):
         cv2.imwrite("./output/result.png", canvas)
     if bool(config["INPUT_OUTPUT"]["create_svg"]):
         svg_drawing = svgwrite.Drawing(filename="./output/result.svg", size=(
-            prepared_image.shape[1], prepared_image.shape[0]), debug=True)
+            prepared_image.shape[1], prepared_image.shape[0]))
         for start, end in lines:
             svg_drawing.add(svg_drawing.line(
                 start, end, stroke=svgwrite.rgb(0, 0, 0, '%')))
