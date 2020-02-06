@@ -198,7 +198,9 @@ def create_video(lines, video_parameters, shape):
                 stroke_scale = 1
                 color = [0,0,0]
             cv2.line(canvas, start, end, color, thickness=stroke_scale, lineType=8, shift=0)
-        frames.append(canvas)
+
+        resized_canvas = get_resized_img_for_video(canvas, video_width, video_height)
+        frames.append(resized_canvas)
     print("")
 
     # final frame
