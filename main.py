@@ -102,11 +102,11 @@ def create_video(lines, video_parameters, shape):
     with open(os.devnull, 'wb') as quiet_output:
         subprocess.call(["mkdir", "output/frames"])
 
-    duration = float(video_parameters["duration"])
+    drawing_duration = float(video_parameters["drawing_duration"])
     fps = float(video_parameters["fps"])
-    no_of_frames = int(duration * fps)
-    no_of_lines_per_frame = int(len(lines) / (duration * fps)) + 1
-    no_of_lines_per_second = int(len(lines) / duration)
+    no_of_frames = int(drawing_duration * fps)
+    no_of_lines_per_frame = int(len(lines) / (drawing_duration * fps)) + 1
+    no_of_lines_per_second = int(len(lines) / drawing_duration)
     frames = []
     for i in range(no_of_frames):
         canvas = get_empty_white_canvas(shape[1], shape[0])
