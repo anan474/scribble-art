@@ -6,11 +6,13 @@ import cv2
 import numpy as np
 import random
 import math
+import sys
 import connections
 
 def get_empty_white_canvas(size_x=1920, size_y=1080):
-    img = np.array([255], dtype=np.uint8) * np.ones((size_y,size_x,1), dtype=np.uint8)
+    img = np.array([255], dtype=np.uint8) * np.ones((size_y,size_x,3), dtype=np.uint8)
     return img
+
 
 
 def get_prepared_image(source_image, scale_factor):
@@ -19,7 +21,12 @@ def get_prepared_image(source_image, scale_factor):
     grayscale image.
     """
     gray_image = cv2.cvtColor(source_image, cv2.COLOR_BGR2GRAY)
-    resized_image = cv2.resize(gray_image, dsize=(0,0), fx=scale_factor, fy=scale_factor)
+    new_width = int(scale_factor * gray_image.shape[1])
+    new_height = int(scale_factor * gray_image.shape[0])
+    if new_width % 2 != 0:
+        new_width += 1
+    new_size = (new_width, new_height)
+    resized_image = cv2.resize(gray_image, new_size)
     return resized_image
 
 
@@ -60,32 +67,127 @@ def create_scribble_art(config):
     point_thresholds = get_point_thresholds(no_of_layers, exponent, prefactor)
     gray_value_step = 255.0 / len(point_thresholds)
 
-    canvas = get_empty_white_canvas(prepared_image.shape[1], prepared_image.shape[0])
-    max_distance = float(config["DRAWING"]["max_line_length_factor"]) * min(canvas.shape[1], canvas.shape[0])
+
+    max_distance = float(config["DRAWING"]["max_line_length_factor"]) * min(prepared_image.shape[1], prepared_image.shape[0])
+
+    lines = []
     for layer_index in range(no_of_layers):
+        text = "\rCreate layer {:4d} / {:d}".format(layer_index, no_of_layers-1)
+        sys.stdout.write(text)
+        sys.stdout.flush()
         current_max = 255.0 - (layer_index + 1.0) * gray_value_step
         points = get_layer_points(current_max, point_thresholds[layer_index], prepared_image)
 
         if len(points) > 1:
             xmax = prepared_image.shape[1]
             ymax = prepared_image.shape[0]
-
-
             connected = connections.connect_points(points, max_distance, xmax, ymax)
 
 
             for i in range(len(connected)-1):
                 start = connected[i]
                 end = connected[i+1]
-                color = [0]
-                stroke_scale=1
-
                 if connections.calc_distance(start,end) < max_distance:
-                    # dwg.add(dwg.line(start, end, stroke=svgwrite.rgb(0, 0, 0, '%')))
-                    cv2.line(canvas, start, end, color, thickness=stroke_scale, lineType=8, shift=0)
-            cv2.imshow("test", canvas)
-            cv2.imwrite("./output/result_%04i.png" % layer_index, canvas)
-            cv2.waitKey(1)
+                    lines.append([start,end])
+    print("")
+
+    if bool(config["INPUT_OUTPUT"]["create_video"]):
+        video_parameters = config["VIDEO_PARAMETERS"]
+        create_video(lines, video_parameters, prepared_image.shape)
+
+
+def create_video(lines, video_parameters, shape):
+    with open(os.devnull, 'wb') as quiet_output:
+        subprocess.call(["mkdir", "output/frames"])
+
+    duration = float(video_parameters["duration"])
+    fps = float(video_parameters["fps"])
+    no_of_frames = int(duration * fps)
+    no_of_lines_per_frame = int(len(lines) / (duration * fps)) + 1
+    no_of_lines_per_second = int(len(lines) / duration)
+    print("no_of_lines_per_frame", no_of_lines_per_frame)
+    frames = []
+    for i in range(no_of_frames):
+        canvas = get_empty_white_canvas(shape[1], shape[0])
+        text = "\rCreate frame {:7d} / {:d}".format(i, no_of_frames-1)
+        sys.stdout.write(text)
+        sys.stdout.flush()
+        line_index_a = i * no_of_lines_per_frame
+        line_index_b = min(line_index_a + no_of_lines_per_frame, len(lines))
+        # print("lines", len(lines), line_index_b)
+        for line_index, line in enumerate(lines[0:line_index_b]):
+            start = line[0]
+            end = line[1]
+            if line_index > line_index_b - 0.2 * no_of_lines_per_second:
+                color = [0,0,200]
+                stroke_scale = 2
+            else:
+                stroke_scale = 1
+                color = [0,0,0]
+            cv2.line(canvas, start, end, color, thickness=stroke_scale, lineType=8, shift=0)
+            #cv2.imwrite("./output/frames/frame_{:07d}.png".format(i), canvas)
+        frames.append(canvas)
+    print("")
+
+    # final frame
+    canvas = get_empty_white_canvas(shape[1], shape[0])
+    for line in lines:
+        start = line[0]
+        end = line[1]
+        stroke_scale = 1
+        color = [0,0,0]
+        cv2.line(canvas, start, end, color, thickness=stroke_scale, lineType=8, shift=0)
+    for i in range(int(fps) * 5):
+        frames.append(canvas)
+
+    size = (shape[1],shape[0])
+    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+    fourcc = 0x00000021
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    out = cv2.VideoWriter('project.avi', fourcc, fps, size)
+
+    for f in frames:
+        out.write(f)
+    out.release()
+
+    # merge_frames(fps, dim_x=shape[1], dim_y=shape[0])
+    # with open(os.devnull, 'wb') as quiet_output:
+    #     subprocess.call(["rm", "-r", "output/frames"])
+
+
+def merge_frames(fps, dim_x, dim_y):
+    call_list = []
+    call_list.append("ffmpeg")
+    call_list.append("-r")
+    call_list.append("{:d}".format(int(fps)))
+    call_list.append("-f")
+    call_list.append("image2")
+    call_list.append("-s")
+    call_list.append("{:d}x{:d}".format(dim_x, dim_y))
+    call_list.append("-i")
+    call_list.append("./output/frames/frame_%07d.png")
+    call_list.append("-vcodec")
+    call_list.append("libx264")
+    call_list.append("-crf")
+    call_list.append("25")
+    call_list.append("-pix_fmt")
+    call_list.append("yuv420p")
+    call_list.append("./output/final.mp4")
+
+    # with open(os.devnull, 'wb') as quiet_output:
+    #     subprocess.call(call_list, stdout=quiet_output, stderr=quiet_output)
+    subprocess.call(call_list)
+
+# cv2.imshow("test", canvas)
+#cv2.waitKey(1)
+# color = [0]
+# stroke_scale=1
+#
+#     # dwg.add(dwg.line(start, end, stroke=svgwrite.rgb(0, 0, 0, '%')))
+#     cv2.line(canvas, start, end, color, thickness=stroke_scale, lineType=8, shift=0)
+# cv2.imshow("test", canvas)
+# cv2.imwrite("./output/result_%04i.png" % layer_index, canvas)
+# cv2.waitKey(1)
 
 
 
@@ -97,7 +199,7 @@ def delete_and_create_output_folder():
     """
     with open(os.devnull, 'wb') as quiet_output:
         subprocess.call(["rm", "-r", "output"])
-        subprocess.call(["mkdir", "-p", "output"])
+        subprocess.call(["mkdir", "output"])
 
 
 def get_config(filename):
