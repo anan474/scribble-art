@@ -83,6 +83,7 @@ def resize_image_to_width(img, new_width):
     img_resized = cv2.resize(img, (new_width, int(new_height)))
     return img_resized
 
+
 def load_from_file(config):
     """
     Load some essential parameters which were defined
@@ -98,7 +99,8 @@ def load_from_file(config):
 
 
 def create_scribble_art(config):
-    infile_path, scale_factor, no_of_layers, exponent, prefactor, max_line_length_factor = load_from_file(config)
+    infile_path, scale_factor, no_of_layers, exponent, prefactor, max_line_length_factor = load_from_file(
+        config)
     source_image = cv2.imread(infile_path)
     prepared_image = get_prepared_image(source_image, scale_factor)
 
@@ -110,7 +112,7 @@ def create_scribble_art(config):
 
     lines = []
     for layer_index in range(no_of_layers):
-        print_progress("Create layers", layer_index, no_of_layers-1)
+        print_progress("Create layers", layer_index, no_of_layers - 1)
         current_max = 255.0 - (layer_index + 1.0) * gray_value_step
         points = get_layer_points(
             current_max, point_thresholds[layer_index], prepared_image)
@@ -131,6 +133,7 @@ def create_scribble_art(config):
             cv2.waitKey(1)
     print("")
     create_files(lines, prepared_image.shape, config)
+
 
 def create_files(lines, shape, config):
     if bool(config["INPUT_OUTPUT"]["create_png"]):
@@ -154,9 +157,9 @@ def get_line_segments_from_points(neighboring_points, threshold):
     distance is less than threshold.
     """
     lines = []
-    for i in range(len(neighboring_points)-1):
+    for i in range(len(neighboring_points) - 1):
         start = neighboring_points[i]
-        end = neighboring_points[i+1]
+        end = neighboring_points[i + 1]
         if connections.calc_distance(start, end) < threshold:
             lines.append((start, end))
     return lines
@@ -189,19 +192,19 @@ def get_resized_img_for_video(img, video_width, video_height):
     """
     img_width = img.shape[1]
     img_height = img.shape[0]
-    if img_width / img_height <= 16.0/9.0:
+    if img_width / img_height <= 16.0 / 9.0:
         resized_img = resize_image_to_height(img, video_height)
         resized_width = resized_img.shape[1]
         required_border = int(round(video_width - resized_width) / 2.0)
         video_frame = get_empty_white_canvas(video_width, video_height)
         video_frame[0:video_height, required_border:(
-            resized_width+required_border)] = resized_img
+            resized_width + required_border)] = resized_img
     else:
         resized_img = resize_image_to_width(img, video_width)
         resized_height = resized_img.shape[0]
         required_border = int(round(video_height - resized_height) / 2.0)
         video_frame = get_empty_white_canvas(video_width, video_height)
-        video_frame[required_border:(resized_height+required_border),
+        video_frame[required_border:(resized_height + required_border),
                     0:video_width] = resized_img
     return video_frame
 
@@ -216,7 +219,7 @@ def create_video(lines, video_parameters, shape):
     no_of_lines_per_second = int(len(lines) / drawing_duration)
     frames = []
     for i in range(no_of_frames):
-        print_progress("Create frames", i, no_of_frames-1)
+        print_progress("Create frames", i, no_of_frames - 1)
         canvas = get_empty_white_canvas(shape[1], shape[0])
         line_index_a = i * no_of_lines_per_frame
         line_index_b = min(line_index_a + no_of_lines_per_frame, len(lines))
@@ -226,8 +229,8 @@ def create_video(lines, video_parameters, shape):
             seconds_lines_remain_colored = float(
                 video_parameters["seconds_lines_remain_colored"])
             if line_index > line_index_b - seconds_lines_remain_colored * no_of_lines_per_second:
-                color = [int(c)
-                         for c in video_parameters["active_line_color"].split(",")]
+                color = [
+                    int(c) for c in video_parameters["active_line_color"].split(",")]
                 stroke_scale = 2
             else:
                 stroke_scale = 1
