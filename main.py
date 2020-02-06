@@ -137,6 +137,7 @@ def create_video(lines, video_parameters, shape):
         stroke_scale = 1
         color = [0,0,0]
         cv2.line(canvas, start, end, color, thickness=stroke_scale, lineType=8, shift=0)
+    duration_of_final_image = float(video_parameters["duration_of_final_image"])
     for i in range(int(fps) * 5):
         frames.append(canvas)
 
