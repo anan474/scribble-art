@@ -207,7 +207,7 @@ def create_video(lines, video_parameters, shape):
     duration_of_final_image = float(video_parameters["duration_of_final_image"])
     final_canvas = put_lines_on_canvas(lines, shape)
 
-    size = (shape[1],shape[0])
+    size = (video_width,video_height)
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
     out = cv2.VideoWriter('./output/result.avi', fourcc, fps, size)
 
