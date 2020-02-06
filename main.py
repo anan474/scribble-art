@@ -10,6 +10,9 @@ import sys
 import connections
 
 def get_empty_white_canvas(size_x=1920, size_y=1080):
+    """
+    This returns the array on which will be drawn.
+    """
     img = np.array([255], dtype=np.uint8) * np.ones((size_y,size_x,3), dtype=np.uint8)
     return img
 
