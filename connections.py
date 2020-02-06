@@ -47,17 +47,17 @@ def get_grid_with_points(nx, ny, points, xmax, ymax):
     initial_i, initial_k = i, k
     return grid, initial_i, initial_k
 
-def get_neighboring_points(points, max_distance, xmax, ymax):
+def get_neighboring_points(points, cell_width, xmax, ymax):
     """
     Sort the points such that each point
     is followed by its closest neighbor.
     This is needed to know which points should be connected with
     line segments.
-    Only if there is no neighbor within the circle with the
-    radius max_distance, any other point may follow.
+    Only if there is no neighbor within the adjecent
+    grid cells, any other point may follow.
     """
-    nx = int(xmax / max_distance) + 1
-    ny = int(ymax / max_distance) + 1
+    nx = int(xmax / cell_width) + 1
+    ny = int(ymax / cell_width) + 1
     grid, initial_i, initial_k = get_grid_with_points(nx, ny, points, xmax, ymax)
 
     current_i = initial_i
