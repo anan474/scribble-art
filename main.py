@@ -137,7 +137,7 @@ def get_line_segments_from_points(neighboring_points, threshold):
             lines.append((start,end))
     return lines
 
-def create_final_canvas(lines, shape):
+def put_lines_on_canvas(lines, shape):
     canvas = get_empty_white_canvas(shape[1], shape[0])
     for line in lines:
         start = line[0]
