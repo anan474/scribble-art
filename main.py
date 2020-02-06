@@ -8,6 +8,7 @@ import numpy as np
 import math
 import sys
 import connections
+import svgwrite
 
 def get_empty_white_canvas(size_x=1920, size_y=1080):
     """
@@ -89,9 +90,14 @@ def create_scribble_art(config):
                     lines.append([start,end])
     print("")
 
-    canvas = create_final_canvas(lines, prepared_image.shape)
     if bool(config["INPUT_OUTPUT"]["create_png"]):
+        canvas = create_final_canvas(lines, prepared_image.shape)
         cv2.imwrite("./output/result.png", canvas)
+    if bool(config["INPUT_OUTPUT"]["create_svg"]):
+        svg_drawing = svgwrite.Drawing(filename="./output/result.svg", size=(prepared_image.shape[1], prepared_image.shape[0]), debug=True)
+        for start, end in lines:
+            svg_drawing.add(svg_drawing.line(start, end, stroke=svgwrite.rgb(0, 0, 0, '%')))
+        svg_drawing.save()
     if bool(config["INPUT_OUTPUT"]["create_video"]):
         video_parameters = config["VIDEO_PARAMETERS"]
         create_video(lines, video_parameters, prepared_image.shape)
