@@ -89,11 +89,12 @@ def create_scribble_art(config):
                     lines.append([start,end])
     print("")
 
+    canvas = create_final_canvas(lines, prepared_image.shape)
+    if bool(config["INPUT_OUTPUT"]["create_png"]):
+        cv2.imwrite("./output/result.png", canvas)
     if bool(config["INPUT_OUTPUT"]["create_video"]):
         video_parameters = config["VIDEO_PARAMETERS"]
         create_video(lines, video_parameters, prepared_image.shape)
-    if bool(config["INPUT_OUTPUT"]["create_png"]):
-        canvas = create_final_canvas(lines, prepared_image.shape)
 
 
 
