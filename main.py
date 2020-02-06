@@ -3,8 +3,8 @@ import argparse
 import subprocess
 import os
 import cv2
-import numpy as np
 import random
+import numpy as np
 import math
 import sys
 import connections
