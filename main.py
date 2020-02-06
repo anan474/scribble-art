@@ -143,8 +143,6 @@ def create_video(lines, video_parameters, shape):
         frames.append(canvas)
 
     size = (shape[1],shape[0])
-    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-    fourcc = 0x00000021
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
     out = cv2.VideoWriter('./output/final.avi', fourcc, fps, size)
 
