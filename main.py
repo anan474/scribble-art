@@ -183,6 +183,14 @@ def get_config(filename):
     config.read(filename)
     return config
 
+def set_seeds_of_rngs(seed):
+    """
+    You should be able to set the seeds of
+    the employed random number generators
+    if you want to reproduce an image.
+    """
+    random.seed(seed)
+    np.random.seed(seed)
 
 def main():
     """
@@ -199,6 +207,7 @@ def main():
     arguments = vars(parser.parse_args())
     filename = arguments["config"]
     config = get_config(filename)
+    set_seeds_of_rngs(int(config["DRAWING"]["random_seed"]))
     create_scribble_art(config)
 
 
