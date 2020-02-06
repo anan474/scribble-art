@@ -14,19 +14,19 @@ def is_allowed(pair, index_a_max, index_b_max):
             allowed = True
     return allowed
 
-def get_neighbor_cell_indices(index_a, index_b, cell_distance, index_a_max, index_b_max):
-    if cell_distance == 0:
+def get_neighbor_cell_indices(index_a, index_b, search_distance, index_a_max, index_b_max):
+    if search_distance == 0:
         return [ (index_a, index_b) ]
     else:
         neighbor_cell_indices = []
 
-        for k in range(-cell_distance,cell_distance+1):
-            neighbor_cell_indices.append( (index_a+k, index_b+cell_distance) )
-            neighbor_cell_indices.append( (index_a+k, index_b-cell_distance) )
+        for k in range(-search_distance,search_distance+1):
+            neighbor_cell_indices.append( (index_a+k, index_b+search_distance) )
+            neighbor_cell_indices.append( (index_a+k, index_b-search_distance) )
 
-        for k in range(-cell_distance+1,cell_distance):
-            neighbor_cell_indices.append( (index_a+cell_distance, index_b+k) )
-            neighbor_cell_indices.append( (index_a-cell_distance, index_b+k) )
+        for k in range(-search_distance+1,search_distance):
+            neighbor_cell_indices.append( (index_a+search_distance, index_b+k) )
+            neighbor_cell_indices.append( (index_a-search_distance, index_b+k) )
 
         neighbor_cell_indices_filtered = []
         for pair in neighbor_cell_indices:
