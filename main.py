@@ -155,9 +155,29 @@ def print_progress(msg, index, total):
     sys.stdout.write(text)
     sys.stdout.flush()
 
+
+def get_resized_img_for_video(img, video_width, video_height):
+    """
+    This preserves the aspect ratio of the
+    """
+    img_width = img.shape[1]
+    img_height = img.shape[0]
+    if img_height > img_width:
+        resized_img = resize_image_to_height(img, video_height)
+        resized_width = resized_img.shape[1]
+        required_border = int(round(video_width - resized_width) / 2.0)
+        video_frame = get_empty_white_canvas(video_width, video_height)
+        video_frame[0:video_height,required_border:(resized_width+required_border)] = resized_img
+    else:
+        resized_img = resize_image_to_width(img, video_width)
+
+    return video_frame
+
 def create_video(lines, video_parameters, shape):
     drawing_duration = float(video_parameters["drawing_duration"])
     fps = float(video_parameters["fps"])
+    video_width = int(video_parameters["width"])
+    video_height = int(video_parameters["height"])
     no_of_frames = int(drawing_duration * fps)
     no_of_lines_per_frame = int(len(lines) / (drawing_duration * fps)) + 1
     no_of_lines_per_second = int(len(lines) / drawing_duration)
