@@ -190,6 +190,13 @@ def get_resized_img_for_video(img, video_width, video_height):
             resized_width+required_border)] = resized_img
     else:
         resized_img = resize_image_to_width(img, video_width)
+        resized_height = resized_img.shape[0]
+        print("test", img.shape)
+        required_border = int(round(video_height - resized_height) / 2.0)
+        video_frame = get_empty_white_canvas(video_width, video_height)
+        video_frame[required_border:(resized_height+required_border),
+                    0:video_width] = resized_img
+
 
     return video_frame
 
