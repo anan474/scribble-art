@@ -234,7 +234,7 @@ def create_video(lines, video_parameters, shape):
     final_canvas = put_lines_on_canvas(lines, shape)
     resized_final_canvas = get_resized_img_for_video(
         final_canvas, video_width, video_height)
-    for i in range(int(fps) * duration_of_final_image):
+    for i in range(int(fps * duration_of_final_image)):
         frames.append(resized_final_canvas)
 
     size = (video_width, video_height)
