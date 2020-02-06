@@ -14,7 +14,6 @@ def get_empty_white_canvas(size_x=1920, size_y=1080):
     return img
 
 
-
 def get_prepared_image(source_image, scale_factor):
     """
     The original image must be resized and turned into a
@@ -150,33 +149,8 @@ def create_video(lines, video_parameters, shape):
         out.write(f)
     out.release()
 
-    # merge_frames(fps, dim_x=shape[1], dim_y=shape[0])
-    # with open(os.devnull, 'wb') as quiet_output:
-    #     subprocess.call(["rm", "-r", "output/frames"])
 
 
-def merge_frames(fps, dim_x, dim_y):
-    call_list = []
-    call_list.append("ffmpeg")
-    call_list.append("-r")
-    call_list.append("{:d}".format(int(fps)))
-    call_list.append("-f")
-    call_list.append("image2")
-    call_list.append("-s")
-    call_list.append("{:d}x{:d}".format(dim_x, dim_y))
-    call_list.append("-i")
-    call_list.append("./output/frames/frame_%07d.png")
-    call_list.append("-vcodec")
-    call_list.append("libx264")
-    call_list.append("-crf")
-    call_list.append("25")
-    call_list.append("-pix_fmt")
-    call_list.append("yuv420p")
-    call_list.append("./output/final.mp4")
-
-    # with open(os.devnull, 'wb') as quiet_output:
-    #     subprocess.call(call_list, stdout=quiet_output, stderr=quiet_output)
-    subprocess.call(call_list)
 
 # cv2.imshow("test", canvas)
 #cv2.waitKey(1)
