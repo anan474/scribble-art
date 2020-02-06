@@ -128,22 +128,23 @@ def create_scribble_art(config):
             cv2.imshow("Current state",
                        resize_image_to_height(canvas, new_height))
             cv2.waitKey(1)
-
     print("")
+    create_files(lines, prepared_image.shape, config)
 
+def create_files(lines, shape, config):
     if bool(config["INPUT_OUTPUT"]["create_png"]):
-        canvas = put_lines_on_canvas(lines, prepared_image.shape)
+        canvas = put_lines_on_canvas(lines, shape)
         cv2.imwrite("./output/result.png", canvas)
     if bool(config["INPUT_OUTPUT"]["create_svg"]):
         svg_drawing = svgwrite.Drawing(filename="./output/result.svg", size=(
-            prepared_image.shape[1], prepared_image.shape[0]))
+            shape[1], shape[0]))
         for start, end in lines:
             svg_drawing.add(svg_drawing.line(
                 start, end, stroke=svgwrite.rgb(0, 0, 0, '%')))
         svg_drawing.save()
     if bool(config["INPUT_OUTPUT"]["create_video"]):
         video_parameters = config["VIDEO_PARAMETERS"]
-        create_video(lines, video_parameters, prepared_image.shape)
+        create_video(lines, video_parameters, shape)
 
 
 def get_line_segments_from_points(neighboring_points, threshold):
