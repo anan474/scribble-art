@@ -34,6 +34,12 @@ def get_prepared_image(source_image, scale_factor):
 
 
 def get_point_thresholds(no_of_layers, exponent, prefactor):
+    """
+    All layers have different threshold values.
+    I found the results to be satisfying if the values obey
+    a power law. The prefactor and the amplitude are
+    defined in the options file.
+    """
     return [math.pow(x, exponent) * prefactor for x in range(no_of_layers)]
 
 
