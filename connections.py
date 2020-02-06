@@ -3,11 +3,18 @@ import math
 
 
 def calc_distance(pa, pb):
+    """
+    Returns Euclidean distance.
+    """
     distance = math.sqrt((pa[0] - pb[0])**2.0 + (pa[1] - pb[1])**2.0)
     return distance
 
 
 def is_allowed(pair, index_a_max, index_b_max):
+    """
+    A pair if cell indices is only allowed
+    if it is still on the grid.
+    """
     allowed = False
     if pair[0] >= 0 and pair[0] < index_a_max:
         if pair[1] >= 0 and pair[1] < index_b_max:
@@ -16,6 +23,18 @@ def is_allowed(pair, index_a_max, index_b_max):
 
 
 def get_neighbor_cell_indices(index_a, index_b, search_distance, index_a_max, index_b_max):
+    """
+    Returns the cell indices of the cells on the border of a square
+    around the cell (index_a, index_b).
+    Example  for search_distance = 2:
+    -------------
+    ---xxxxx-----    x: neighbor cell
+    ---x---x-----    o: cell at (index_a, index_b)
+    ---x-o-x-----
+    ---x---x-----
+    ---xxxxx-----
+    -------------
+    """
     if search_distance == 0:
         return [(index_a, index_b)]
     else:
@@ -38,6 +57,10 @@ def get_neighbor_cell_indices(index_a, index_b, search_distance, index_a_max, in
 
 
 def get_grid_with_points(nx, ny, points, xmax, ymax):
+    """
+    The grid is used to speed up the search for
+    neighbors.
+    """
     cell_width_x = xmax / float(nx)
     cell_width_y = ymax / float(ny)
     grid = [[[] for k in range(ny)] for i in range(nx)]
@@ -68,7 +91,7 @@ def get_neighboring_points(points, cell_width, xmax, ymax):
     current_point_index = 0
     current_point = grid[current_i][current_k][current_point_index]
     del grid[current_i][current_k][current_point_index]
-    connected = [current_point]
+    neighbor_points = [current_point]
 
     for i in range(len(points)-1):
         found = False
@@ -96,7 +119,7 @@ def get_neighboring_points(points, cell_width, xmax, ymax):
             current_k = current_best_cell_index_k
             current_point_index = current_best_point_index
             current_point = grid[current_i][current_k][current_point_index]
-            connected.append(current_point)
+            neighbor_points.append(current_point)
             # delete the found point
             del grid[current_i][current_k][current_point_index]
         else:
@@ -114,11 +137,11 @@ def get_neighboring_points(points, cell_width, xmax, ymax):
                         current_k = cell_k
                         current_point_index = 0
                         current_point = grid[current_i][current_k][current_point_index]
-                        connected.append(current_point)
+                        neighbor_points.append(current_point)
                         # delete the found point
                         del grid[current_i][current_k][current_point_index]
                         break
 
                 search_distance += 1
 
-    return connected
+    return neighbor_points
