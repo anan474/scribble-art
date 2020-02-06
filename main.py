@@ -84,6 +84,10 @@ def resize_image_to_width(img, new_width):
     return img_resized
 
 def load_from_file(config):
+    """
+    Load some essential parameters which were defined
+    in the external file.
+    """
     scale_factor = float(config["DRAWING"]["image_scale_factor"])
     no_of_layers = int(config["DRAWING"]["no_of_layers"])
     exponent = float(config["DRAWING"]["point_thresholds_exponent"])
