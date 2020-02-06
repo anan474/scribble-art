@@ -149,22 +149,6 @@ def create_video(lines, video_parameters, shape):
     out.release()
 
 
-
-
-# cv2.imshow("test", canvas)
-#cv2.waitKey(1)
-# color = [0]
-# stroke_scale=1
-#
-#     # dwg.add(dwg.line(start, end, stroke=svgwrite.rgb(0, 0, 0, '%')))
-#     cv2.line(canvas, start, end, color, thickness=stroke_scale, lineType=8, shift=0)
-# cv2.imshow("test", canvas)
-# cv2.imwrite("./output/result_%04i.png" % layer_index, canvas)
-# cv2.waitKey(1)
-
-
-
-
 def delete_and_create_output_folder():
     """
     Each time the program is run, the previous output
