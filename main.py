@@ -99,8 +99,8 @@ def load_from_file(config):
 
 
 def create_scribble_art(config):
-    infile_path, scale_factor, no_of_layers, exponent, prefactor, max_line_length_factor = load_from_file(
-        config)
+    infile_path, scale_factor, no_of_layers, exponent, \
+        prefactor, max_line_length_factor = load_from_file(config)
     source_image = cv2.imread(infile_path)
     prepared_image = get_prepared_image(source_image, scale_factor)
 
