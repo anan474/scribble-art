@@ -56,17 +56,15 @@ def get_neighbor_cell_indices(index_a, index_b, search_distance, index_a_max, in
         return neighbor_cell_indices_filtered
 
 
-def get_grid_with_points(nx, ny, points, xmax, ymax):
+def get_grid_with_points(nx, ny, points, cell_width):
     """
     The grid is used to speed up the search for
     neighbors.
     """
-    cell_width_x = xmax / float(nx)
-    cell_width_y = ymax / float(ny)
     grid = [[[] for k in range(ny)] for i in range(nx)]
     for p in points:
-        i = int(p[0] / cell_width_x)
-        k = int(p[1] / cell_width_y)
+        i = int(p[0] / cell_width)
+        k = int(p[1] / cell_width)
         grid[i][k].append(p)
     initial_i, initial_k = i, k
     return grid, initial_i, initial_k
@@ -83,8 +81,7 @@ def get_neighboring_points(points, cell_width, xmax, ymax):
     """
     nx = int(xmax / cell_width) + 1
     ny = int(ymax / cell_width) + 1
-    grid, initial_i, initial_k = get_grid_with_points(
-        nx, ny, points, xmax, ymax)
+    grid, initial_i, initial_k = get_grid_with_points(nx, ny, points, cell_width)
 
     current_i = initial_i
     current_k = initial_k
