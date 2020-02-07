@@ -141,7 +141,6 @@ def get_neighboring_points(points, cell_width, xmax, ymax):
                         # delete the found point
                         del grid[current_i][current_k][current_point_index]
                         break
-
                 search_distance += 1
 
     return neighbor_points
