@@ -123,7 +123,7 @@ def get_neighboring_points(points, cell_width, xmax, ymax):
             # delete the found point
             del grid[current_i][current_k][current_point_index]
         else:
-            # get any other point in the near distance
+            # get any other point nearby
             found_new = False
             search_distance = 2
             while not found_new:
