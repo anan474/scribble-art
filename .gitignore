@@ -1,4 +1,5 @@
 output/*
+input/test_image_03.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
