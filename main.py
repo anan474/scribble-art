@@ -189,11 +189,11 @@ def print_progress(msg, index, total):
 def get_resized_img_for_video(img, video_width, video_height):
     """
     This preserves the aspect ratio of img.
-    The background is filled with white pixels. 
+    The background is filled with white pixels.
     """
     img_width = img.shape[1]
     img_height = img.shape[0]
-    if img_width / img_height <= 16.0 / 9.0:
+    if img_width / img_height <= video_width / float(video_height):
         resized_img = resize_image_to_height(img, video_height)
         resized_width = resized_img.shape[1]
         required_border = int(round(video_width - resized_width) / 2.0)
