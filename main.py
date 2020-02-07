@@ -188,7 +188,8 @@ def print_progress(msg, index, total):
 
 def get_resized_img_for_video(img, video_width, video_height):
     """
-    This preserves the aspect ratio of the
+    This preserves the aspect ratio of img.
+    The background is filled with white pixels. 
     """
     img_width = img.shape[1]
     img_height = img.shape[0]

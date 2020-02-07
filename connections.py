@@ -12,7 +12,7 @@ def calc_distance(pa, pb):
 
 def is_allowed(pair, index_a_max, index_b_max):
     """
-    A pair if cell indices is only allowed
+    A pair of cell indices is only allowed
     if it is still on the grid.
     """
     allowed = False
@@ -26,7 +26,7 @@ def get_neighbor_cell_indices(index_a, index_b, search_distance, index_a_max, in
     """
     Returns the cell indices of the cells on the border of a square
     around the cell (index_a, index_b).
-    Example  for search_distance = 2:
+    Example for search_distance = 2:
     -------------
     ---xxxxx-----    x: neighbor cell
     ---x---x-----    o: cell at (index_a, index_b)
@@ -78,7 +78,7 @@ def get_neighboring_points(points, cell_width, xmax, ymax):
     is followed by its closest neighbor.
     This is needed to know which points should be connected with
     line segments.
-    Only if there is no neighbor within the adjecent
+    Only if there is no neighbor within the adjacent
     grid cells, any other point may follow.
     """
     nx = int(xmax / cell_width) + 1
