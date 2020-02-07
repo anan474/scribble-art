@@ -293,7 +293,7 @@ def set_seeds_of_rngs(seed):
 
 def main():
     """
-    The program start and ends here.
+    The program starts and ends here.
     """
     delete_and_create_output_folder()
     parser = argparse.ArgumentParser()
