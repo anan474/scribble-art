@@ -70,7 +70,7 @@ def resize_image_to_height(img, new_height):
     """
     This preserves the aspect ratio.
     """
-    new_width = round(new_height * img.shape[1] / img.shape[0])
+    new_width = round(new_height * img.shape[1] / float(img.shape[0]))
     img_resized = cv2.resize(img, (int(new_width), new_height))
     return img_resized
 
@@ -79,7 +79,7 @@ def resize_image_to_width(img, new_width):
     """
     This preserves the aspect ratio.
     """
-    new_height = round(new_width * img.shape[0] / img.shape[1])
+    new_height = round(new_width * img.shape[0] / float(img.shape[1]))
     img_resized = cv2.resize(img, (new_width, int(new_height)))
     return img_resized
 
