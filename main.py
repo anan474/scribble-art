@@ -25,8 +25,8 @@ def get_prepared_image(source_image, scale_factor):
     grayscale image.
     """
     gray_image = cv2.cvtColor(source_image, cv2.COLOR_BGR2GRAY)
-    new_width = int(scale_factor * gray_image.shape[1])
-    new_height = int(scale_factor * gray_image.shape[0])
+    new_width = int(round(scale_factor * gray_image.shape[1]))
+    new_height = int(round(scale_factor * gray_image.shape[0]))
     new_size = (new_width, new_height)
     resized_image = cv2.resize(gray_image, new_size)
     return resized_image
