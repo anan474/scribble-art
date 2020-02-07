@@ -22,7 +22,7 @@ def get_empty_white_canvas(size_x=1920, size_y=1080):
 
 def get_prepared_image(source_image, scale_factor):
     """
-    The original image must be resized and turned into a
+    The original image is resized and turned into a
     grayscale image.
     """
     gray_image = cv2.cvtColor(source_image, cv2.COLOR_BGR2GRAY)
