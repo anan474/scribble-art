@@ -1,6 +1,5 @@
 import configparser
 import argparse
-import subprocess
 import os
 import cv2
 import random
@@ -9,6 +8,7 @@ import math
 import sys
 import connections
 import svgwrite
+import shutil
 
 
 def get_empty_white_canvas(size_x=1920, size_y=1080):
@@ -266,8 +266,9 @@ def delete_and_create_output_folder():
     folder shall be deleted.
     """
     with open(os.devnull, 'wb') as quiet_output:
-        subprocess.call(["rm", "-r", "output"])
-        subprocess.call(["mkdir", "output"])
+        if os.path.isdir("output"):
+            shutil.rmtree("output")
+        os.mkdir("output")
 
 
 def get_config(filename):
