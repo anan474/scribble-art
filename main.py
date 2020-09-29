@@ -138,13 +138,14 @@ def create_files(lines, shape, config):
     if bool(int(config["INPUT_OUTPUT"]["create_png"])):
         canvas = put_lines_on_canvas(lines, shape)
         cv2.imwrite("./output/result.png", canvas)
-    if bool(int(config["INPUT_OUTPUT"]["create_svg"])):
-        svg_drawing = svgwrite.Drawing(filename="./output/result.svg", size=(
-            shape[1], shape[0]))
-        for start, end in lines:
-            svg_drawing.add(svg_drawing.line(
-                start, end, stroke=svgwrite.rgb(0, 0, 0, '%')))
-        svg_drawing.save()
+    # if bool(int(config["INPUT_OUTPUT"]["create_svg"])):
+    #     svg_drawing = svgwrite.Drawing(filename="./output/result.svg", size=(
+    #         shape[1], shape[0]))
+    #     for start, end in lines:
+    #         if len(start) == 2 and len(end) == 2:
+    #             svg_drawing.add(svg_drawing.line(
+    #                 start, end, stroke=svgwrite.rgb(0, 0, 0, '%')))
+    #     svg_drawing.save()
     if bool(int(config["INPUT_OUTPUT"]["create_video"])):
         video_parameters = config["VIDEO_PARAMETERS"]
         create_video(lines, video_parameters, shape)
@@ -254,7 +255,8 @@ def create_video(lines, video_parameters, shape):
 
     # write to file
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter('./output/result.avi', fourcc, fps, (video_width, video_height))
+    out = cv2.VideoWriter('./output/result.avi', fourcc,
+                          fps, (video_width, video_height))
     for f in frames:
         out.write(f)
     out.release()
