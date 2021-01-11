@@ -1,4 +1,3 @@
-import configparser
 import argparse
 import os
 import cv2
@@ -9,6 +8,33 @@ import sys
 import connections
 import svgwrite
 import shutil
+
+# [INPUT_OUTPUT]
+input_image = "./input/test1.jpg"
+image_name = "test1.jpg"
+output_dir = "."
+create_png = 1
+create_svg = 0
+create_video = 1
+show_step_images = 0
+step_image_height = 800
+
+# [VIDEO_PARAMETERS]
+fps = 15
+drawing_duration = 5
+duration_of_final_image = 2.0
+active_line_color = "200, 56, 56"
+seconds_lines_remain_colored = 0.2
+height = 1280
+width = 720
+
+# [DRAWING]
+conf_no_of_layers = 30
+conf_max_line_length_factor = 0.07
+image_scale_factor = 0.8
+conf_point_thresholds_prefactor = 0.00004
+conf_point_thresholds_exponent = 2.6
+random_seed = 800002
 
 
 def get_empty_white_canvas(size_x=1920, size_y=1080):
@@ -83,23 +109,23 @@ def resize_image_to_width(img, new_width):
     return img_resized
 
 
-def load_from_file(config):
+def load_from_file():
     """
     Load some essential parameters which were defined
     in the external file.
     """
-    scale_factor = float(config["DRAWING"]["image_scale_factor"])
-    no_of_layers = int(config["DRAWING"]["no_of_layers"])
-    exponent = float(config["DRAWING"]["point_thresholds_exponent"])
-    prefactor = float(config["DRAWING"]["point_thresholds_prefactor"])
-    max_line_length_factor = float(config["DRAWING"]["max_line_length_factor"])
-    infile_path = config["INPUT_OUTPUT"]["input_image"]
+    scale_factor = float(image_scale_factor)
+    no_of_layers = int(conf_no_of_layers)
+    exponent = float(conf_point_thresholds_exponent)
+    prefactor = float(conf_point_thresholds_prefactor)
+    max_line_length_factor = float(conf_max_line_length_factor)
+    infile_path = input_image
     return infile_path, scale_factor, no_of_layers, exponent, prefactor, max_line_length_factor
 
 
-def create_scribble_art(config):
+def create_scribble_art():
     infile_path, scale_factor, no_of_layers, exponent, \
-        prefactor, max_line_length_factor = load_from_file(config)
+        prefactor, max_line_length_factor = load_from_file()
     source_image = cv2.imread(infile_path)
     prepared_image = get_prepared_image(source_image, scale_factor)
 
@@ -124,14 +150,14 @@ def create_scribble_art(config):
             lines += get_line_segments_from_points(
                 neighboring_points, cell_width)
 
-        if bool(int(config["INPUT_OUTPUT"]["show_step_images"])):
+        if bool(int(show_step_images)):
             canvas = put_lines_on_canvas(lines, prepared_image.shape)
-            new_height = int(config["INPUT_OUTPUT"]["step_image_height"])
+            new_height = int(step_image_height)
             cv2.imshow("Current state",
                        resize_image_to_height(canvas, new_height))
             cv2.waitKey(1)
     print("")
-    create_files(lines, prepared_image.shape, config)
+    create_files(lines, prepared_image.shape)
 
 
 def makesvg(lines):
@@ -144,15 +170,15 @@ def makesvg(lines):
     return out
 
 
-def create_files(lines, shape, config):
-    if bool(int(config["INPUT_OUTPUT"]["create_png"])):
+def create_files(lines, shape):
+    if bool(create_png):
         canvas = put_lines_on_canvas(lines, shape)
-        cv2.imwrite("./output/result.png", canvas)
-    if bool(int(config["INPUT_OUTPUT"]["create_svg"])):
+        cv2.imwrite(output_dir + "/" + image_name + ".png", canvas)
+    if bool(create_svg):
         # svg_drawing = svgwrite.Drawing(filename="./output/result.svg", size=(
         #     shape[1], shape[0]))
         # print(lines[0])
-        f = open("output/out.svg", 'w')
+        f = open(output_dir + "/" + image_name + ".svg", 'w')
         f.write(makesvg(lines))
         f.close()
         # for start, end in lines:
@@ -160,9 +186,8 @@ def create_files(lines, shape, config):
         #         svg_drawing.add(svg_drawing.line(
         #             start, end, stroke=svgwrite.rgb(0, 0, 0, '%')))
         # svg_drawing.save()
-    if bool(int(config["INPUT_OUTPUT"]["create_video"])):
-        video_parameters = config["VIDEO_PARAMETERS"]
-        create_video(lines, video_parameters, shape)
+    if bool(create_video):
+        create_video(lines, shape)
 
 
 def get_line_segments_from_points(neighboring_points, threshold):
@@ -224,11 +249,9 @@ def get_resized_img_for_video(img, video_width, video_height):
     return video_frame
 
 
-def create_video(lines, video_parameters, shape):
-    drawing_duration = float(video_parameters["drawing_duration"])
-    fps = float(video_parameters["fps"])
-    video_width = int(video_parameters["width"])
-    video_height = int(video_parameters["height"])
+def create_video(lines, shape):
+    video_width = int(width)
+    video_height = int(height)
     no_of_frames = int(drawing_duration * fps)
     no_of_lines_per_frame = int(len(lines) / (drawing_duration * fps)) + 1
     no_of_lines_per_second = int(len(lines) / drawing_duration)
@@ -241,11 +264,9 @@ def create_video(lines, video_parameters, shape):
         for line_index, line in enumerate(lines[0:line_index_b]):
             start = line[0]
             end = line[1]
-            seconds_lines_remain_colored = float(
-                video_parameters["seconds_lines_remain_colored"])
             if line_index > line_index_b - seconds_lines_remain_colored * no_of_lines_per_second:
                 color = [
-                    int(c) for c in video_parameters["active_line_color"].split(",")]
+                    int(c) for c in active_line_color.split(",")]
                 stroke_scale = 2
             else:
                 stroke_scale = 1
@@ -259,8 +280,6 @@ def create_video(lines, video_parameters, shape):
     print("")
 
     # final frame
-    duration_of_final_image = float(
-        video_parameters["duration_of_final_image"])
     final_canvas = put_lines_on_canvas(lines, shape)
     resized_final_canvas = get_resized_img_for_video(
         final_canvas, video_width, video_height)
@@ -269,7 +288,7 @@ def create_video(lines, video_parameters, shape):
 
     # write to file
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter('./output/result.avi', fourcc,
+    out = cv2.VideoWriter(output_dir + "/" + image_name + ".avi", fourcc,
                           fps, (video_width, video_height))
     for f in frames:
         out.write(f)
@@ -287,15 +306,6 @@ def delete_and_create_output_folder():
         os.mkdir("output")
 
 
-def get_config(filename):
-    """
-    All settings are stored in an external text file.
-    """
-    config = configparser.ConfigParser()
-    config.read(filename)
-    return config
-
-
 def set_seeds_of_rngs(seed):
     """
     You should be able to set the seeds of
@@ -310,20 +320,29 @@ def main():
     """
     The program starts and ends here.
     """
-    # delete_and_create_output_folder()
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-c",
-        "--config",
-        required=False,
-        default="options.cfg",
-        help="path to program options file")
-    arguments = vars(parser.parse_args())
-    filename = arguments["config"]
-    config = get_config(filename)
-    set_seeds_of_rngs(int(config["DRAWING"]["random_seed"]))
-    create_scribble_art(config)
+
+    set_seeds_of_rngs(random_seed)
+    create_scribble_art()
 
 
 if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(
+        description='Convert image to sketch in png, svg and mp4.')
+    parser.add_argument('-i', '--input', dest='input_image',
+                        default='input_image', action='store', nargs='?', type=str,
+                        help='Input image')
+
+    parser.add_argument('-o', '--output', dest='output_dir',
+                        default=output_dir, action='store', nargs='?', type=str,
+                        help='Output directory.')
+
+    args = parser.parse_args()
+
+    input_image = args.input_image
+    output_dir = args.output_dir
+
+    image_name = input_image.split("/")[-1]
+    image_name = image_name.split(".")[0]
+
     main()
