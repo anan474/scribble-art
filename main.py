@@ -134,18 +134,32 @@ def create_scribble_art(config):
     create_files(lines, prepared_image.shape, config)
 
 
+def makesvg(lines):
+    print("generating svg file...")
+    out = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">'
+    for l in lines:
+        l = ",".join([str(p[0]*0.5)+","+str(p[1]*0.5) for p in l])
+        out += '<polyline points="'+l+'" stroke="black" stroke-width="2" fill="none" />\n'
+    out += '</svg>'
+    return out
+
+
 def create_files(lines, shape, config):
     if bool(int(config["INPUT_OUTPUT"]["create_png"])):
         canvas = put_lines_on_canvas(lines, shape)
         cv2.imwrite("./output/result.png", canvas)
-    # if bool(int(config["INPUT_OUTPUT"]["create_svg"])):
-    #     svg_drawing = svgwrite.Drawing(filename="./output/result.svg", size=(
-    #         shape[1], shape[0]))
-    #     for start, end in lines:
-    #         if len(start) == 2 and len(end) == 2:
-    #             svg_drawing.add(svg_drawing.line(
-    #                 start, end, stroke=svgwrite.rgb(0, 0, 0, '%')))
-    #     svg_drawing.save()
+    if bool(int(config["INPUT_OUTPUT"]["create_svg"])):
+        # svg_drawing = svgwrite.Drawing(filename="./output/result.svg", size=(
+        #     shape[1], shape[0]))
+        # print(lines[0])
+        f = open("output/out.svg", 'w')
+        f.write(makesvg(lines))
+        f.close()
+        # for start, end in lines:
+        #     if len(start) == 2 and len(end) == 2:
+        #         svg_drawing.add(svg_drawing.line(
+        #             start, end, stroke=svgwrite.rgb(0, 0, 0, '%')))
+        # svg_drawing.save()
     if bool(int(config["INPUT_OUTPUT"]["create_video"])):
         video_parameters = config["VIDEO_PARAMETERS"]
         create_video(lines, video_parameters, shape)
@@ -296,7 +310,7 @@ def main():
     """
     The program starts and ends here.
     """
-    delete_and_create_output_folder()
+    # delete_and_create_output_folder()
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-c",
